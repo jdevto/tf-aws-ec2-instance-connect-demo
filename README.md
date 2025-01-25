@@ -18,8 +18,7 @@ This Terraform configuration deploys **Amazon Linux 2 and Amazon Linux 2023 EC2 
 ```plaintext
 .
 ├── main.tf                  # Terraform configuration for EC2 instances, IAM, VPC, and Security Groups
-├── README.md                # Documentation (this file)
-└── variables.tf             # Optional: Stores configurable parameters (if needed)
+└── README.md                # Documentation (this file)
 ```
 
 ---
