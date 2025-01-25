@@ -84,17 +84,18 @@ terraform destroy -auto-approve
 
 ### **❌ EC2 Instance Connect Option is Disabled in AWS Console**
 
-✅ Ensure **instance is in a public subnet** and has a **public IP**.\
-✅ **Security group must allow EC2 Instance Connect traffic** (AWS-managed prefix list).
+✅ Ensure the **instance is in a public subnet** and has a **public IP**.
+✅ Verify that **Amazon Linux 2 or Ubuntu** is used (other OS may require manual setup).
 
-### **❌ "Instance is not reachable" Error**
+### **❌ Cannot Connect to Private Instances Using EC2 Instance Connect Endpoint**
 
-✅ The instance must be running **Amazon Linux 2 or Ubuntu**.\
-✅ EC2 Instance Connect **does not work on RHEL, Windows, or AL2023**.
+✅ Make sure the **EC2 Instance Connect Endpoint** is deployed in the **same subnet** as the target instance.
+✅ Verify that the **Security Group** attached to the **EC2 Instance Connect Endpoint** allows SSH traffic.
 
-### **❌ "No SSH key pair found" Error**
+### **❌ "Instance is Not Reachable" Error**
 
-✅ No key pairs are required. **AWS injects a temporary key** automatically.
+✅ Confirm that **EC2 Instance Connect Agent is installed and running** (`systemctl status ec2-instance-connect` on Amazon Linux 2023).
+✅ The instance must have **outbound internet connectivity** (NAT Gateway or AWS PrivateLink required for package updates).
 
 ---
 
