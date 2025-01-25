@@ -1,16 +1,15 @@
-# 🚀 EC2 Instance Connect & AWS SSM Demo
+# 🚀 EC2 Instance Connect Terraform Demo
 
-This Terraform configuration deploys an **Amazon Linux 2 and Amazon Linux 2023 EC2 instance** with **EC2 Instance Connect** and **AWS Systems Manager (SSM) Session Manager** for remote access.
+This Terraform configuration deploys **Amazon Linux 2 and Amazon Linux 2023 EC2 instances** with **EC2 Instance Connect** for secure SSH access **without key pairs**.
 
 ---
 
 ## **📌 Features**
 
-✅ Creates an **EC2 instance** running **Amazon Linux 2** and **Amazon Linux 2023**
-✅ Uses **EC2 Instance Connect** for secure SSH access (no key pairs required)
-✅ Enables **AWS SSM Session Manager** for remote access
-✅ Configures **VPC, Public Subnet, Security Group, and IAM Roles**
-✅ Uses **AWS-managed prefix lists** for EC2 Instance Connect security
+✅ Creates an **EC2 instance** running **Amazon Linux 2** and **Amazon Linux 2023**.\
+✅ Uses **EC2 Instance Connect** for secure SSH access (no key pairs required).\
+✅ Configures **VPC, Public Subnet, Security Group, and IAM Roles**.\
+✅ Uses **AWS-managed prefix lists** for EC2 Instance Connect security.
 
 ---
 
@@ -27,98 +26,48 @@ This Terraform configuration deploys an **Amazon Linux 2 and Amazon Linux 2023 E
 
 ## **🛠 Prerequisites**
 
-- **Terraform** installed ([Download](https://developer.hashicorp.com/terraform/downloads))
-- **AWS CLI** installed ([Setup Guide](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html))
-- **AWS Session Manager Plugin** installed ([Installation Guide](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html))
-- **AWS Credentials** configured (`~/.aws/credentials` or environment variables)
+- **Terraform** installed ([Download](https://developer.hashicorp.com/terraform/downloads)).\
+- **AWS CLI** installed ([Setup Guide](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)).\
+- **AWS Credentials** configured (`~/.aws/credentials` or environment variables).
 
-### **Installing AWS SSM Session Manager Plugin**
+### **🔹 EC2 Instance Connect Prerequisites**
 
-If you encounter the error `SessionManagerPlugin is not found`, install the plugin for your operating system:
-
-#### **Debian/Ubuntu**
-
-```sh
-curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb"
-sudo dpkg -i session-manager-plugin.deb
-```
-
-#### **Amazon Linux 2 & RHEL 7**
-
-```sh
-sudo yum install -y https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_64bit/session-manager-plugin.rpm
-```
-
-#### **Amazon Linux 2023 & RHEL 8/9**
-
-```sh
-sudo dnf install -y https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_64bit/session-manager-plugin.rpm
-```
-
-#### **Windows**
-
-Download and install from: [AWS SSM Plugin for Windows](https://s3.amazonaws.com/session-manager-downloads/plugin/latest/windows/SessionManagerPluginSetup.exe)
-
-Alternatively, download the zipped version:
-
-```sh
-https://s3.amazonaws.com/session-manager-downloads/plugin/latest/windows/SessionManagerPlugin.zip
-```
-
-Unzip and run the installer.
-
-#### **macOS**
-
-```sh
-curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/mac/sessionmanager-bundle.zip" -o "sessionmanager-bundle.zip"
-unzip sessionmanager-bundle.zip
-sudo ./sessionmanager-bundle/install -i /usr/local/sessionmanagerplugin -b /usr/local/bin/session-manager-plugin
-```
-
-Verify installation:
-
-```sh
-session-manager-plugin --version
-```
+EC2 Instance Connect requires:\
+✅ **Public EC2 instances** (must be in a public subnet with a public IP).\
+✅ **Amazon Linux 2 or Ubuntu** (EC2 Instance Connect is not available on all OS).\
+✅ **Security group rules allowing EC2 Instance Connect (AWS-managed prefix list used in Terraform).**
 
 ---
 
 ## **🚀 Deployment Steps**
 
-1️⃣ **Clone the repository (if applicable)**
+### **1️⃣ Clone the Repository (If Applicable)**
 
-   ```sh
-   git clone <repository-url>
-   cd <project-directory>
-   ```
+```sh
+git clone git@github.com:jdevto/tf-aws-ec2-instance-connect-demo.git
+```
 
-2️⃣ **Initialize Terraform**
+### **2️⃣ Initialize Terraform**
 
-   ```sh
-   terraform init
-   ```
+```sh
+terraform init
+```
 
-3️⃣ **Preview changes before applying**
+### **3️⃣ Preview Changes Before Applying**
 
-   ```sh
-   terraform plan
-   ```
+```sh
+terraform plan
+```
 
-4️⃣ **Apply the configuration**
+### **4️⃣ Apply the Configuration**
 
-   ```sh
-   terraform apply -auto-approve
-   ```
+```sh
+terraform apply -auto-approve
+```
 
-5️⃣ **Find the instance in AWS Console and connect via EC2 Instance Connect**
+### **5️⃣ Find the Instance in AWS Console and Connect via EC2 Instance Connect**
 
 - Go to **EC2 → Instances → Select Instance → Click "Connect" → Choose "EC2 Instance Connect"**.
-
-6️⃣ **Alternatively, connect using AWS SSM Session Manager**
-
-   ```sh
-   aws ssm start-session --target i-xxxxxxxxxxxxxxxxx
-   ```
 
 ---
 
@@ -132,12 +81,30 @@ terraform destroy -auto-approve
 
 ---
 
+## **🔹 Troubleshooting EC2 Instance Connect Issues**
+
+### **❌ EC2 Instance Connect Option is Disabled in AWS Console**
+
+✅ Ensure **instance is in a public subnet** and has a **public IP**.\
+✅ **Security group must allow EC2 Instance Connect traffic** (AWS-managed prefix list).
+
+### **❌ "Instance is not reachable" Error**
+
+✅ The instance must be running **Amazon Linux 2 or Ubuntu**.\
+✅ EC2 Instance Connect **does not work on RHEL, Windows, or AL2023**.
+
+### **❌ "No SSH key pair found" Error**
+
+✅ No key pairs are required. **AWS injects a temporary key** automatically.
+
+---
+
 ## **📌 Notes**
 
-- **Amazon Linux 2 has EC2 Instance Connect pre-installed**, but **Amazon Linux 2023 requires manual installation** (handled in `user_data`).
-- The **EC2 security group only allows SSH from AWS EC2 Instance Connect** using **AWS-managed prefix lists**.
+- **Amazon Linux 2 comes with EC2 Instance Connect pre-installed**.
+- **Amazon Linux 2023 requires manual installation of EC2 Instance Connect** (handled in Terraform `user_data`).
+- **The EC2 security group only allows SSH from AWS EC2 Instance Connect** using **AWS-managed prefix lists**.
 - **No SSH key pairs are needed**, improving security.
-- **Ensure AWS SSM Session Manager Plugin is installed** on your local machine before using `aws ssm start-session`.
 
 ---
 
